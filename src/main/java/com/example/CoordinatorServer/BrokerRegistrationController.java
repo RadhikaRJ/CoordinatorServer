@@ -41,6 +41,7 @@ public class BrokerRegistrationController {
         System.out.println("Existing Broker Registry at Configuration Server: ");
         System.out.println(brokerRegistry);
         brokerRegistry.put(broker.getUniqueId(), broker);
+
         coordinatorServerService.registerInstance(broker.getEC2instanceID(), broker.getUniqueId());
         System.out.println(
                 "Broker node with uniqueID " + broker.getUniqueId() + " is registered with Coordinator Server");
@@ -70,7 +71,7 @@ public class BrokerRegistrationController {
 
     @GetMapping("/getCurrent-leadBroker-PrivateIP")
     public String getCurrentLeadBrokerPrivateIP() {
-        System.out.println("Coordinator sending lead broker's private IP Address. \n");
+        System.out.println("Coordinator sending lead broker's private IP Address.\n");
         return coordinatorServerService.getleadEC2BrokerPrivateIP();
     }
 
@@ -99,6 +100,7 @@ public class BrokerRegistrationController {
             isLeaderResponsive = true;
         } catch (Exception e) {
             // Exception occurred, leader is not responsive
+
             System.err.println("Error occurred while pinging leader broker: " + e.getMessage());
             isLeaderResponsive = false;
             System.out.println(
@@ -155,26 +157,27 @@ public class BrokerRegistrationController {
                         "leader node is non responsive. \n Setting value of leader broker at coordinator server as null untill leader election completes.");
                 // set leaderInstancePrivateIPAddress to null
                 coordinatorServerService.setleadEC2BrokerPrivateIP(null);
-
+                // rename
                 Integer instanceIDOfFailedLeadBroker = findUniqueIdByIpAddress(currLeadInstanceIPAddressAtServer);
                 if (instanceIDOfFailedLeadBroker != null) {
                     System.out.println("Deregistering failed leader broker node");
                     deregisterBroker(instanceIDOfFailedLeadBroker);
-                    System.out.println("Starting leader election among the other registered broker nodesin cluster");
-                    coordinatorServerService.electNewLeaderAndAssociateElasticIp();
-                    System.out.println("New leader is elected.");
-                    String newLeadBrokerPrivateIPAddress = coordinatorServerService.getleadEC2BrokerPrivateIP();
-                    System.out.println("PrivateIP of new leader broker node: " + newLeadBrokerPrivateIPAddress);
-
-                    List<String> peerBrokerIPAddresses = getPeerBrokerIPList();
-                    System.out.println(
-                            "Sending new elected lead broker's private IP to all registered peer nodes in cluster");
-                    sendNewLeadBrokerPrivateIPToPeerNodes(peerBrokerIPAddresses, newLeadBrokerPrivateIPAddress);
 
                 } else {
                     System.out.println(
                             "Failed to find uniqueID associated with the IP address of the failed leader broker node.");
                 }
+                System.out.println("Starting leader election among the other registered broker nodesin cluster");
+
+                coordinatorServerService.electNewLeaderAndAssociateElasticIp();
+                System.out.println("New leader is elected.");
+                String newLeadBrokerPrivateIPAddress = coordinatorServerService.getleadEC2BrokerPrivateIP();
+                System.out.println("PrivateIP of new leader broker node: " + newLeadBrokerPrivateIPAddress);
+
+                List<String> peerBrokerIPAddresses = getPeerBrokerIPList();
+                System.out.println(
+                        "Sending new elected lead broker's private IP to all registered peer nodes in cluster");
+                sendNewLeadBrokerPrivateIPToPeerNodes(peerBrokerIPAddresses, newLeadBrokerPrivateIPAddress);
             }
 
         }

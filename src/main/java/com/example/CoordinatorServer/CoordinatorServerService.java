@@ -66,7 +66,7 @@ public class CoordinatorServerService {
             if (instanceId.equals(currentLeaderInstanceId)) {
                 disassociateElasticIp(instanceId);
             }
-            terminateEC2Instance(instanceId);
+            // terminateEC2Instance(instanceId);
             System.out.println("EC2 instance with uniqueId " + uniqueId + " is terminated. ");
         }
         System.out.println(
@@ -147,6 +147,7 @@ public class CoordinatorServerService {
         }
     }
 
+    // should now seek public ipv4 address
     private String getPrivateIpAddressByInstanceId(String instanceId) {
         DescribeInstancesRequest request = new DescribeInstancesRequest()
                 .withInstanceIds(instanceId);
@@ -156,9 +157,10 @@ public class CoordinatorServerService {
         for (Reservation reservation : response.getReservations()) {
             for (Instance instance : reservation.getInstances()) {
                 if (instance.getInstanceId().equals(instanceId)) {
+
                     return instance.getPrivateIpAddress();
                 }
-                // return instance.getPrivateIpAddress();
+
             }
         }
         System.out.println("Failed to get a private IP address of elected leader node. Value returned is null.");
