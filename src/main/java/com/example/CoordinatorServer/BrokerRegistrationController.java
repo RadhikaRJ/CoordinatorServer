@@ -55,7 +55,7 @@ public class BrokerRegistrationController {
     }
 
     @DeleteMapping("/deregister-broker/{uniqueId}")
-    public void deregisterBroker(@PathVariable int uniqueId) {
+    public void deregisterBroker(@PathVariable Integer uniqueId) {
         Broker broker = brokerRegistry.remove(uniqueId);
         if (broker != null) {
             coordinatorServerService.unregisterInstance(broker.getUniqueId());

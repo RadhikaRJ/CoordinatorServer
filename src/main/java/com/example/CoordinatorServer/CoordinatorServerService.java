@@ -66,8 +66,9 @@ public class CoordinatorServerService {
         if (instanceId != null) {
             if (instanceId.equals(currentLeaderInstanceId)) {
                 disassociateElasticIp(instanceId);
+
             }
-            // terminateEC2Instance(instanceId);
+            terminateEC2Instance(instanceId);
             System.out.println("EC2 instance with uniqueId " + uniqueId + " is terminated. ");
         }
         System.out.println(
