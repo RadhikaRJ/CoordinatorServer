@@ -44,7 +44,7 @@ public class BrokerRegistrationController {
 
         coordinatorServerService.registerInstance(broker.getEC2instanceID(), broker.getUniqueId());
         System.out.println(
-                "Broker node with uniqueID " + broker.getUniqueId() + " is registered with Coordinator Server");
+                "Broker node with uniqueID " + broker.getUniqueId() + " has registered with Coordinator Server");
         System.out.println(brokerRegistry);
 
     }
@@ -128,13 +128,13 @@ public class BrokerRegistrationController {
         System.out.println("Sending the new elected broker's private IP address to nodes in the cluster.\n");
         for (String ipAddress : peerBrokerIPAddresses) {
             JSONObject requestBodyJson = new JSONObject();
-            requestBodyJson.put("newLeadBrokerPrivateIPAddress", newLeadBrokerPrivateIPAddress);
+            requestBodyJson.put("New LeadBroker's Private IP Address: ", newLeadBrokerPrivateIPAddress);
 
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBodyJson.toString(), headers);
             String url = "http://" + ipAddress + endpoint;
 
             restTemplate.postForObject(url, requestEntity, Void.class);
-            System.out.println("new elected leader broker node's IP address sent to: " + ipAddress);
+            System.out.println("New elected leader broker node's IP address sent to: " + ipAddress);
         }
     }
 
@@ -155,9 +155,9 @@ public class BrokerRegistrationController {
             if (!leaderIsAlive) {
                 System.out.println(
                         "leader node is non responsive. \n Setting value of leader broker at coordinator server as null untill leader election completes.");
-                // set leaderInstancePrivateIPAddress to null
+
                 coordinatorServerService.setleadEC2BrokerPrivateIP(null);
-                // rename
+
                 Integer instanceIDOfFailedLeadBroker = findUniqueIdByIpAddress(currLeadInstanceIPAddressAtServer);
                 if (instanceIDOfFailedLeadBroker != null) {
                     System.out.println("Deregistering failed leader broker node");

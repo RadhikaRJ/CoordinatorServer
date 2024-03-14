@@ -47,8 +47,9 @@ public class CoordinatorServerService {
     }
 
     public synchronized void registerInstance(String instanceId, int uniqueId) {
-        if (brokerInstanceMap.isEmpty()) {// ensuring that generateElasticIP and association happens only once for 1st
-                                          // broker's registration
+        if (brokerInstanceMap.isEmpty()) {
+            // ensuring that generateElasticIP and association happens only once for 1st
+            // broker's registration
             brokerInstanceMap.put(uniqueId, instanceId);
             generateElasticIp();
             associateElasticIpWithLeader(instanceId);
@@ -123,9 +124,9 @@ public class CoordinatorServerService {
     }
 
     /*
-     * node must be registered and elaticIP must exist for the
+     * Broker EC2 Node must be registered and elaticIP must exist for the
      * association. Helps prevent external non-registered EC2
-     * instance from being associated with the elasticIPAddress
+     * instance from being associated with the AWS Elastic IP Address
      */
     public synchronized void associateElasticIpWithLeader(String leaderInstanceId) {
         if (elasticIpAllocationId != null && isInstanceRegistered(leaderInstanceId)) {
@@ -143,7 +144,7 @@ public class CoordinatorServerService {
             setleadEC2BrokerPrivateIP(leaderPrivateIpAddress);
             System.out.println("Lead broker node's private IP at coordinator server is updated.");
             System.out.println(
-                    "current leader broker's Private IP address is updated at Coordinator server for new elected lead broker");
+                    "Current leader broker's Private IP address is updated at Coordinator server for new elected lead broker");
         }
     }
 
